@@ -3,6 +3,9 @@ package com.mzk.springsecuritydemo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @author miaozhenkai
+ */
 @SpringBootApplication
 public class SpringSecurityDemoApplication {
 
