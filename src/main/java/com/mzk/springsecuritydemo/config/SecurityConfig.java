@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -30,6 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 @Slf4j
 @Configuration
@@ -37,11 +40,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userService;
 
+    @Autowired
+    MyWebAuthenticationDetailsSource myWebAuthenticationDetailsSource;
+
 //    @Autowired
 //    DataSource dataSource;
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/js/**", "/css/**", "/images/**");
+        web.ignoring().antMatchers("/js/**", "/css/**", "/images/**","/code");
     }
 
     @Override
@@ -59,16 +65,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .withUser("admin")
-//                .password("123").roles("admin")
-//                .and()
-//                .withUser("user").password("123").roles("user");
-
-        auth.userDetailsService(userService);
+    @Bean
+    MyAuthenticationProvider myAuthenticationProvider() {
+        MyAuthenticationProvider myAuthenticationProvider = new MyAuthenticationProvider();
+        myAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        myAuthenticationProvider.setUserDetailsService(userService);
+        return myAuthenticationProvider;
     }
+
+    @Override
+    @Bean
+    protected AuthenticationManager authenticationManager() throws Exception {
+        ProviderManager manager = new ProviderManager(Arrays.asList(myAuthenticationProvider()));
+        return manager;
+    }
+
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+////        auth.inMemoryAuthentication()
+////                .withUser("admin")
+////                .password("123").roles("admin")
+////                .and()
+////                .withUser("user").password("123").roles("user");
+//
+//        auth.userDetailsService(userService);
+//    }
 
 
 //    @Override
@@ -138,6 +159,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         );
         loginFilter.setAuthenticationManager(authenticationManagerBean());
         loginFilter.setFilterProcessesUrl("/user/login");
+        loginFilter.setAuthenticationDetailsSource(myWebAuthenticationDetailsSource);
         return loginFilter;
     }
 

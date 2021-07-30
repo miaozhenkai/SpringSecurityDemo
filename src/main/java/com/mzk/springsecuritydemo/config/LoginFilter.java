@@ -44,6 +44,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 //String code = loginData.get("code");
                 //checkCode(response, code, verify_code);
             }
+            request.setAttribute("code",loginData.get("code"));
             String username = loginData.get(getUsernameParameter());
             String password = loginData.get(getPasswordParameter());
             if (username == null) {

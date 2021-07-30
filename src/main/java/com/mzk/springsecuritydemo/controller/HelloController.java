@@ -1,5 +1,9 @@
 package com.mzk.springsecuritydemo.controller;
 
+import com.mzk.springsecuritydemo.config.MyWebAuthenticationDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -9,8 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class HelloController {
+
+    Authentication authentication;
+
     @GetMapping("/hello")
     public String hello() {
+        authentication = SecurityContextHolder.getContext().getAuthentication();
+        MyWebAuthenticationDetails details = (MyWebAuthenticationDetails) authentication.getDetails();
+
+        System.out.println(details);
+        System.out.println(authentication.getAuthorities());
+        System.out.println(authentication.isAuthenticated());
+        System.out.println(authentication.getCredentials());
+        System.out.println(authentication.getPrincipal());
         return "hello";
     }
 
