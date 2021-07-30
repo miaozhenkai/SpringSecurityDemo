@@ -1,4 +1,4 @@
-package com.mzk.springsecuritydemo.config;
+package com.mzk.springsecuritydemo.config.security;
 
 /**
  * @author miaozhenkai
@@ -15,25 +15,22 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import javax.sql.DataSource;
+
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+
 @Slf4j
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -43,11 +40,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     MyWebAuthenticationDetailsSource myWebAuthenticationDetailsSource;
 
-//    @Autowired
+    //    @Autowired
 //    DataSource dataSource;
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/js/**", "/css/**", "/images/**","/code");
+        web.ignoring().antMatchers("/js/**", "/css/**", "/images/**", "/code");
     }
 
     @Override
@@ -69,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     MyAuthenticationProvider myAuthenticationProvider() {
         MyAuthenticationProvider myAuthenticationProvider = new MyAuthenticationProvider();
         myAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        myAuthenticationProvider.setUserDetailsService(userService);
+        myAuthenticationProvider.setUserDetailsService(userDetailsService());
         return myAuthenticationProvider;
     }
 
@@ -92,9 +89,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
 
 
-//    @Override
-//    @Bean
-//    protected UserDetailsService userDetailsService() {
+    @Override
+    @Bean
+    protected UserDetailsService userDetailsService() {
 //        JdbcUserDetailsManager manager = new JdbcUserDetailsManager();
 //        manager.setDataSource(dataSource);
 //        if (!manager.userExists("admin")) {
@@ -104,7 +101,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //            manager.createUser(User.withUsername("user").password("123").roles("user").build());
 //        }
 //        return manager;
-//    }
+        return userService;
+    }
 
     /**
      * 跨域配置
@@ -153,8 +151,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     jsonObject.put("msg", "fail");
                     out.write(jsonObject.toJSONString());
                     out.flush();
-                    out.close();
-                    log.error(exception.getMessage(),exception);
+            out.close();
+            log.error(exception.getMessage(), exception);
                 }
         );
         loginFilter.setAuthenticationManager(authenticationManagerBean());
@@ -165,6 +163,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 角色继承
+     *
      * @return
      */
     @Bean

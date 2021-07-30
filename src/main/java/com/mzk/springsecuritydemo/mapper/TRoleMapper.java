@@ -2,12 +2,12 @@ package com.mzk.springsecuritydemo.mapper;
 
 import com.mzk.springsecuritydemo.pojo.dto.TRole;
 import com.mzk.springsecuritydemo.pojo.dto.TRoleExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
- * 
  * @author miaozhenkai
  * @version 2021-07-12  18:14
  */

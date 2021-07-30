@@ -1,13 +1,13 @@
 package com.mzk.springsecuritydemo.pojo.dto;
 
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
- * 
  * @author miaozhenkai
  * @version 2021-07-12  18:14
  */

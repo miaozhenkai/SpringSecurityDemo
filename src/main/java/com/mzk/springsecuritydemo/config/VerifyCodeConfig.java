@@ -1,12 +1,10 @@
 package com.mzk.springsecuritydemo.config;
 
-import com.google.code.kaptcha.Producer;
-import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.google.code.kaptcha.util.Config;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.GifCaptcha;
+import cn.hutool.captcha.generator.RandomGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-
-import java.util.Properties;
 
 /**
  * @author miaozhenkai
@@ -15,15 +13,15 @@ import java.util.Properties;
 @Component
 public class VerifyCodeConfig {
     @Bean
-    DefaultKaptcha defaultKaptcha() {
-        Properties properties = new Properties();
-        properties.setProperty("kaptcha.image.width", "150");
-        properties.setProperty("kaptcha.image.height", "50");
-        properties.setProperty("kaptcha.textproducer.char.string", "0123456789");
-        properties.setProperty("kaptcha.textproducer.char.length", "4");
-        Config config = new Config(properties);
-        DefaultKaptcha defaultKaptcha = new DefaultKaptcha();
-        defaultKaptcha.setConfig(config);
-        return defaultKaptcha;
+    GifCaptcha gifCaptcha() {
+        // 自定义纯数字的验证码（随机4位数字，可重复）
+        RandomGenerator randomGenerator = new RandomGenerator("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 4);
+//定义图形验证码的长和宽
+        GifCaptcha gifCaptcha = CaptchaUtil.createGifCaptcha(100, 50);
+        gifCaptcha.setGenerator(randomGenerator);
+
+        return gifCaptcha;
+
+
     }
 }

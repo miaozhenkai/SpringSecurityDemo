@@ -27,14 +27,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     TUserRoleMapper tUserRoleMapper;
     @Autowired
     TRoleMapper tRoleMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserDetail userDetail = new UserDetail();
 
         TUserExample tUserExample = new TUserExample();
         tUserExample.createCriteria().andUsernameEqualTo(username);
-        List<TUser> tUsers =  userMapper.selectByExample(tUserExample);
-        if (tUsers.isEmpty()){
+        List<TUser> tUsers = userMapper.selectByExample(tUserExample);
+        if (tUsers.isEmpty()) {
             throw new UsernameNotFoundException("用户不存在");
         }
 
@@ -44,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         List<TUserRole> tUserRoles = tUserRoleMapper.selectByExample(tUserRoleExample);
         List<Long> roleIds = new ArrayList<>();
 
-        tUserRoles.forEach(tUserRole ->{
+        tUserRoles.forEach(tUserRole -> {
             roleIds.add(tUserRole.getRoleId());
         });
 
