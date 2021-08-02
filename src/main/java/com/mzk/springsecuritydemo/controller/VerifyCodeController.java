@@ -1,6 +1,7 @@
 package com.mzk.springsecuritydemo.controller;
 
 import cn.hutool.captcha.GifCaptcha;
+import com.mzk.springsecuritydemo.common.Const;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,7 +29,7 @@ public class VerifyCodeController {
         //生成验证码
         gifCaptcha.createCode();
         String verifyCode = gifCaptcha.getCode();
-        session.setAttribute("verify_code", verifyCode);
+        session.setAttribute(Const.SESSION_VERIFY_CODE, verifyCode);
         //输出code
         log.info("verifyCode:{}", verifyCode);
         try (ServletOutputStream out = response.getOutputStream()) {

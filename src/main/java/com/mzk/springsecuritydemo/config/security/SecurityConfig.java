@@ -6,6 +6,7 @@ package com.mzk.springsecuritydemo.config.security;
  */
 
 import com.alibaba.fastjson.JSONObject;
+import com.mzk.springsecuritydemo.config.filter.LoginFilter;
 import com.mzk.springsecuritydemo.service.impl.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -28,7 +28,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.PrintWriter;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 
 @Slf4j
@@ -73,7 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     protected AuthenticationManager authenticationManager() throws Exception {
-        ProviderManager manager = new ProviderManager(Arrays.asList(myAuthenticationProvider()));
+        ProviderManager manager = new ProviderManager(Collections.singletonList(myAuthenticationProvider()));
         return manager;
     }
 
@@ -130,8 +129,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     LoginFilter loginFilter() throws Exception {
         LoginFilter loginFilter = new LoginFilter();
-
-
         loginFilter.setAuthenticationSuccessHandler((request, response, authentication) -> {
                     response.setContentType("application/json;charset=utf-8");
                     PrintWriter out = response.getWriter();
@@ -146,20 +143,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         loginFilter.setAuthenticationFailureHandler((request, response, exception) -> {
                     response.setContentType("application/json;charset=utf-8");
                     PrintWriter out = response.getWriter();
+
+                    String errorMessage;
+                    if (exception instanceof LockedException) {
+                        errorMessage = "账户被锁定，请联系管理员!" + exception.getMessage();
+                    } else if (exception instanceof CredentialsExpiredException) {
+                        errorMessage = "密码过期，请联系管理员!" + exception.getMessage();
+                    } else if (exception instanceof AccountExpiredException) {
+                        errorMessage = "账户过期，请联系管理员!" + exception.getMessage();
+                    } else if (exception instanceof DisabledException) {
+                        errorMessage = "账户被禁用，请联系管理员!" + exception.getMessage();
+                    } else if (exception instanceof BadCredentialsException) {
+                        errorMessage = "用户名或者密码输入错误，请重新输入!" + exception.getMessage();
+                    } else if (exception instanceof AuthenticationServiceException) {
+                        errorMessage = exception.getMessage();
+                    } else {
+                        errorMessage = "未知异常" + exception.getMessage();
+                    }
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("code", 500);
-                    jsonObject.put("msg", "fail");
+                    jsonObject.put("msg", errorMessage);
                     out.write(jsonObject.toJSONString());
                     out.flush();
-            out.close();
-            log.error(exception.getMessage(), exception);
+                    out.close();
+                    log.error(exception.getMessage(), exception);
                 }
         );
-        loginFilter.setAuthenticationManager(authenticationManagerBean());
+        loginFilter.setAuthenticationManager(authenticationManager());
         loginFilter.setFilterProcessesUrl("/user/login");
         loginFilter.setAuthenticationDetailsSource(myWebAuthenticationDetailsSource);
         return loginFilter;
     }
+
 
     /**
      * 角色继承

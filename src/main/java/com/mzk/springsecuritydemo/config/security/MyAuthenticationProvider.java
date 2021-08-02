@@ -1,6 +1,5 @@
 package com.mzk.springsecuritydemo.config.security;
 
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;
@@ -23,9 +22,9 @@ public class MyAuthenticationProvider extends DaoAuthenticationProvider {
         System.out.println(((MyWebAuthenticationDetails) authentication.getDetails()).getExternalId());
         MyWebAuthenticationDetails details = (MyWebAuthenticationDetails) authentication.getDetails();
 
-        if (!details.isVerifyCodePassed()) {
-            throw new AuthenticationServiceException("验证码错误");
-        }
+//        if (!details.isVerifyCodePassed()) {
+//            throw new AuthenticationServiceException("验证码错误");
+//        }
         super.additionalAuthenticationChecks(userDetails, authentication);
     }
 }

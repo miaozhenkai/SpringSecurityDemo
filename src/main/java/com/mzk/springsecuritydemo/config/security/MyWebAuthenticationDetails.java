@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 自定义Authentication中用户的详细信息
- * 验证码校验逻辑
+ *
  *
  * @author miaozhenkai
  * @version 2021-07-14  11:05
@@ -20,20 +20,20 @@ public class MyWebAuthenticationDetails extends WebAuthenticationDetails {
     /**
      * 验证code是否通过
      */
-    private boolean verifyCodePassed;
+    //private boolean verifyCodePassed;
 
     public MyWebAuthenticationDetails(HttpServletRequest request) {
         super(request);
-        verifyCodePassed = false;
+        //verifyCodePassed = false;
         externalId = "123456";
 
-        String code = (String) request.getAttribute("code");
-        String verify_code = (String) request.getSession().getAttribute("verify_code");
-
-        System.out.println(verify_code);
-        if (code != null && code.equals(verify_code)) {
-            verifyCodePassed = true;
-        }
+//        String code = (String) request.getAttribute("code");
+//        String verify_code = (String) request.getSession().getAttribute("verify_code");
+//
+//        //System.out.println(verify_code);
+//        if (code != null && code.equals(verify_code)) {
+//            verifyCodePassed = true;
+//        }
     }
 
 
@@ -43,7 +43,7 @@ public class MyWebAuthenticationDetails extends WebAuthenticationDetails {
         sb.append(this.getClass().getSimpleName()).append(" [");
         sb.append("RemoteIpAddress=").append(super.getRemoteAddress()).append(", ");
         sb.append("SessionId=").append(super.getSessionId()).append(", ");
-        sb.append("verifyCodePassed=").append(this.isVerifyCodePassed()).append(", ");
+        //sb.append("verifyCodePassed=").append(this.isVerifyCodePassed()).append(", ");
         sb.append("自定义。。=").append(this.externalId).append("]");
         return sb.toString();
     }
