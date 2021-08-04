@@ -43,21 +43,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    DataSource dataSource;
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/js/**", "/css/**", "/images/**", "/code");
+        web.ignoring().antMatchers("/js/**", "/css/**", "/images/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.authorizeRequests()
                 .antMatchers("/admin/**").hasRole("admin")
                 .antMatchers("/user/**").hasRole("user")
+                .antMatchers("/code").permitAll()
+
                 .anyRequest().authenticated()
                 .and()
                 //跨域
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
-                .csrf()
-                .disable();
+                .csrf().disable()
+                .sessionManagement()
+                .maximumSessions(1);//踢掉已经登录用户
         http.addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
@@ -134,8 +138,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     PrintWriter out = response.getWriter();
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("code", 200);
-                    jsonObject.put("msg", "success");
-                    out.write(jsonObject.toJSONString());
+            jsonObject.put("msg", "success");
+            jsonObject.put("data", Collections.singletonMap("token", "admin-token"));
+            out.write(jsonObject.toJSONString());
                     out.flush();
                     out.close();
                 }

@@ -29,6 +29,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println(request.getSession().getId());
         if (!HttpMethod.POST.toString().equals(request.getMethod()) || !request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
             throw new AuthenticationServiceException(
                     "Authentication method not supported: " + request.getMethod());
@@ -70,8 +71,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private void checkCode(HttpServletRequest request, Map<String, String> loginData) {
         String sessionVerifyCode = (String) request.getSession().getAttribute(Const.SESSION_VERIFY_CODE);
         String code = loginData.get("code");
-        if (!StringUtils.hasLength(code) || !StringUtils.hasLength(sessionVerifyCode) || !sessionVerifyCode.equalsIgnoreCase(code)) {
+        if (!StringUtils.hasLength(code) || !StringUtils.hasLength(sessionVerifyCode)) {
             //验证码不正确
+            throw new AuthenticationServiceException("验证码获取异常");
+        }
+        code = code.replace('o', '0').replace('O', '0');
+        sessionVerifyCode = sessionVerifyCode.replace('o', '0').replace('O', '0');
+        if (!sessionVerifyCode.equalsIgnoreCase(code)) {
             throw new AuthenticationServiceException("验证码不正确");
         }
     }

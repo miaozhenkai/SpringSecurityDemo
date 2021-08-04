@@ -16,8 +16,8 @@ public class VerifyCodeConfig {
     GifCaptcha gifCaptcha() {
         // 自定义纯数字的验证码（随机4位数字，可重复）
         RandomGenerator randomGenerator = new RandomGenerator("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 4);
-//定义图形验证码的长和宽
-        GifCaptcha gifCaptcha = CaptchaUtil.createGifCaptcha(100, 50);
+        //定义图形验证码的长和宽
+        GifCaptcha gifCaptcha = CaptchaUtil.createGifCaptcha(100, 40);
         gifCaptcha.setGenerator(randomGenerator);
 
         return gifCaptcha;
